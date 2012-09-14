@@ -1,0 +1,10 @@
+Changes
+LICENSE
+MANIFEST
+META.yml
+Makefile.PL
+README
+lib/AnyEvent/Sereal.pm
+t/00-compile.t
+t/01-base.t
+t/release-unused-vars.t
