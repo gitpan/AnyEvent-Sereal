@@ -1,7 +1,7 @@
 
 
 This archive contains the distribution AnyEvent-Sereal,
-version 0.001:
+version 0.002:
 
   Sereal stream serializer/deserializer for AnyEvent
 

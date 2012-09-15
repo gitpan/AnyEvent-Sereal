@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package AnyEvent::Sereal;
 {
-  $AnyEvent::Sereal::VERSION = '0.001';
+  $AnyEvent::Sereal::VERSION = '0.002';
 }
 
 use AnyEvent ();
@@ -20,9 +20,15 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
     register_write_type(
         sereal => sub
         {
-            shift;              # $self not needed
+	    my $self = shift;
+	    my $data = shift;
 
-            pack "w/a*", encode_sereal(shift, @_);
+	    # When options are passed, we will create a new encoder instance
+	    undef $self->{_sereal_encoder} if @_;
+
+	    pack("w/a*",
+		 ($self->{_sereal_encoder} ||= Sereal::Encoder::->new(@_))
+		 ->encode($data));
         });
 
     use Sereal::Decoder 'decode_sereal';
@@ -31,7 +37,13 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
     register_read_type(
         sereal => sub
         {
-            my($self, $cb, $options) = @_;
+	    my $self = shift;
+	    my $cb = shift;
+
+	    # When options are passed, we will create a new decoder instance
+	    undef $self->{_sereal_decoder} if @_;
+
+	    $self->{_sereal_decoder} ||= Sereal::Decoder::->new(@_);
 
             return sub
             {
@@ -43,7 +55,7 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
 
                 if ($len > $AnyEvent::Sereal::SERIALIZED_MAX_SIZE)
                 {
-                    $self->_error(Errno::E2BIG);
+                    $_[0]->_error(Errno::E2BIG);
                     return;
                 }
 
@@ -55,7 +67,7 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
                     substr($_[0]{rbuf}, 0, $format + $len, '');
 
                     my $dec;
-                    eval { $dec = decode_sereal($data, $options); 1 }
+                    eval { $dec = $_[0]{_sereal_decoder}->decode($data); 1 }
                         or return $_[0]->_error(Errno::EBADMSG);
 
                     $cb->($_[0], $dec);
@@ -70,8 +82,8 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
                         chunk => $len, sub
                         {
                             my $dec;
-                            eval { $dec = decode_sereal($_[1], $options); 1 }
-                                or return $_[0]->_error(Errno::EBADMSG);
+                            eval { $dec = $_[0]{_sereal_decoder}->decode($_[1]);
+				   1 } or return $_[0]->_error(Errno::EBADMSG);
 
                             $cb->($_[0], $dec);
                         });
