@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package AnyEvent::Sereal;
 {
-  $AnyEvent::Sereal::VERSION = '0.002';
+  $AnyEvent::Sereal::VERSION = '0.003';
 }
 
 use AnyEvent ();
@@ -14,7 +14,8 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
     package # hide from pause
         AnyEvent::Handle;
 
-    use Sereal::Encoder 'encode_sereal';
+    use Sereal::Encoder;
+    use Sereal::Decoder;
 
     # push_write(sereal => $data, [$options])
     register_write_type(
@@ -30,8 +31,6 @@ our $SERIALIZED_MAX_SIZE = 1_000_000; # bytes
 		 ($self->{_sereal_encoder} ||= Sereal::Encoder::->new(@_))
 		 ->encode($data));
         });
-
-    use Sereal::Decoder 'decode_sereal';
 
     # push_read(sereal => [$sereal_options], $cb->($hdl, $data))
     register_read_type(
