@@ -20,11 +20,11 @@ name: AnyEvent-Sereal
 requires:
   AnyEvent: 0
   AnyEvent::Handle: 0
-  Sereal::Decoder: 0
-  Sereal::Encoder: 0
+  Sereal::Decoder: 0.09
+  Sereal::Encoder: 0.09
   strict: 0
   warnings: 0
 resources:
   bugtracker: https://github.com/maxatome/p5-anyevent-sereal/issues
   repository: git://github.com/maxatome/p5-anyevent-sereal.git
-version: 0.003
+version: 0.004

@@ -28,12 +28,12 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "AnyEvent" => 0,
     "AnyEvent::Handle" => 0,
-    "Sereal::Decoder" => 0,
-    "Sereal::Encoder" => 0,
+    "Sereal::Decoder" => "0.09",
+    "Sereal::Encoder" => "0.09",
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.003",
+  "VERSION" => "0.004",
   "test" => {
     "TESTS" => "t/*.t"
   }
